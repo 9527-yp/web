@@ -1,15 +1,41 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
-import HomeView from '../views/Home.vue'
+
+import Layout from "@/layout/index.vue";
+
 const routes: Array<RouteRecordRaw> = [
   {
-    path: '/',
-    name: 'home',
-    component: HomeView
+    path: '/login',
+    name: 'login',
+    meta: {
+      title: "登录"
+    },
+    component: () => import("@/views/Login/index.vue"),
   },
+  {
+    path: '/',
+    name: 'layout',
+    component: Layout,
+    redirect: '/home/index',
+    children: [
+      {
+        path: '/home/index', // [唯一]
+        component: () => import("@/views/Home/index.vue"),
+        meta: {
+          title: "首页", // 标题
+          icon: "HomeFilled", // 图标
+          isHide: "0", // 代表路由在菜单中是否隐藏，是否隐藏[0隐藏，1显示]
+          isLink: "", // 是否外链[有值则是外链]
+          isKeepAlive: "0", // 是否缓存路由数据[0是，1否]
+          isFull: "1", // 是否缓存全屏[0是，1否]
+          isAffix: "0" // 是否缓存固定路由[0是，1否]
+        }
+      }
+    ]
+  }
 ]
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
+  history: createWebHistory(),
   routes
 })
 
