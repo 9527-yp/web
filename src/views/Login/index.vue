@@ -61,6 +61,7 @@
     import { ref, reactive } from 'vue'
     import type { FormInstance, FormRules } from "element-plus";
     import { User, Lock, Open } from "@element-plus/icons-vue";
+    import { initDynamicRouter } from "@/router/modules/dynamicRouter.ts";
     import { getAssets } from '@/utils/index.ts'
     import useUserStore from "@/stores/modules/user.ts";
     import authLogin from './json/authLogin.json'
@@ -74,7 +75,6 @@
     const loading = ref(false);
 
     const router = useRouter()
-    const userStore = useUserStore()
 
     interface loginUser {
         loginName: string;
@@ -125,12 +125,13 @@
         if (valid) {
         loading.value = true;
         try {
+            const userStore = useUserStore()
             // 1、执行登录接口
             // const res: any = await koiLogin({ loginName, password, codeKey, securityCode });
             // userStore.setToken(res.data.tokenValue);
             userStore.setToken(authLogin.data.tokenValue);
             // 2、添加动态路由 AND 用户按钮 AND 角色信息 AND 用户个人信息
-            // await initDynamicRouter();
+            await initDynamicRouter();
 
             // 3、清空 tabs数据、keepAlive缓存数据
             // tabsStore.setTab([]);

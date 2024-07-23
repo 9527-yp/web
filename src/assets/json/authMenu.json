@@ -1,0 +1,70 @@
+{
+  "status": 200,
+  "msg": "SUCCESS",
+  "data": [
+    {
+      "menuId": 1,
+      "menuName": "系统管理",
+      "parentId": 0,
+      "menuType": "1",
+      "path": "/system",
+      "name": "systemPage",
+      "component": "",
+      "icon": "Tools",
+      "isHide": "1",
+      "isLink": "",
+      "isKeepAlive": "0",
+      "isFull": "1",
+      "isAffix": "1",
+      "redirect": "/system/user"
+    },
+    {
+      "menuId": 11,
+      "menuName": "用户管理",
+      "parentId": 1,
+      "menuType": "2",
+      "path": "/system/user",
+      "name": "userPage",
+      "component": "system/user/index",
+      "icon": "UserFilled",
+      "isHide": "1",
+      "isLink": "",
+      "isKeepAlive": "0",
+      "isFull": "1",
+      "isAffix": "1",
+      "redirect": ""
+    },
+    {
+      "menuId": 12,
+      "menuName": "角色管理",
+      "parentId": 1,
+      "menuType": "2",
+      "path": "/system/role",
+      "name": "rolePage",
+      "component": "system/role/index",
+      "icon": "CameraFilled",
+      "isHide": "1",
+      "isLink": "",
+      "isKeepAlive": "0",
+      "isFull": "1",
+      "isAffix": "1",
+      "redirect": ""
+    },
+    {
+      "menuId": 13,
+      "menuName": "菜单管理",
+      "parentId": 1,
+      "menuType": "2",
+      "path": "/system/menu",
+      "name": "menuPage",
+      "component": "system/menu/index",
+      "icon": "Menu",
+      "isHide": "1",
+      "isLink": "",
+      "isKeepAlive": "0",
+      "isFull": "1",
+      "isAffix": "1",
+      "redirect": ""
+    }
+  ]
+}

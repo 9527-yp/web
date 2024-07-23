@@ -2,22 +2,21 @@ import { defineStore } from "pinia";
 
 // defineStore方法执行会返回一个函数，函数的作用就是让组件可以获取到仓库数据
 const userStore = defineStore("user", {
-    // 开启数据持久化
-    persist: {
-      // enabled: true, // true 表示开启持久化保存，默认localStorage
-      key: '9527-' + "user", // 默认会以 store 的 id 作为 key
-      storage: localStorage
-    },
-    // 可以通过为属性指定选项来配置持久化方式persist
-    // persist: {
-    //     paths: ['isCollapse'],
-    //     storage: sessionStorage
-    // },
+    
     // 存储数据state
     state: (): any => {
       return {
-        token: ""
+        token: "",
+        name:'123'
       };
+    },
+    // 开启数据持久化
+    persist: {
+      // enabled: true, // true 表示开启持久化保存，默认localStorage
+      key: "token", // 默认会以 store 的 id 作为 key
+      storage: localStorage,
+      paths: ["token"], // 持久化数据 string[]
+
     },
     // 该函数没有上下文数据，所以获取state中的变量需要使用this
     actions: {

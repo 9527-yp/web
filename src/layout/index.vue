@@ -1,8 +1,4 @@
 <template>
-  <!-- <div>
-        this is layout...
-        <router-view></router-view>
-    </div> -->
   <el-container class="common-layout">
     <el-aside class="layout-aside transition-all"
     :style="{width: !globalStore.isCollapse ? globalStore.menuWidth + 'px' : '70px'}">
@@ -28,8 +24,12 @@ import Header from './components/Header.vue'
 import Tabs from './components/Tabs.vue'
 
 import useGlobalStore from "@/stores/modules/global.ts";
+import useAuthStore from "@/stores/modules/auth.ts";
 
 const globalStore = useGlobalStore()
+const authStore = useAuthStore()
+
+console.log("纵向布局左侧动态路由", authStore.showMenuList);
 </script>
 
 <style lang="less" scoped>
