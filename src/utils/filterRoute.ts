@@ -10,38 +10,37 @@ export function generateRoutes(data: any[], parentId: any){
     let modules = import.meta.glob("@/views/**/*.vue");
     const routeList: any = [];
     for (var i = 0; i < data.length; i++) {
-        if (data[i] && !router.hasRoute(data[i].path)) {
-          if (data[i].parentId === parentId) {
-            // console.log("component", data[i].component);
-            const componentTemplate = data[i].component;
-            const route: any = {
-              path: `${data[i].path}`,
-              name: `${data[i].name}`,
-              // 这里modules[`/src/views/${componentTemplate}.vue`] 一定要用绝对定位
-              component: data[i]?.component ? modules[`/src/views/${componentTemplate}.vue`] : Layout,
-              meta: {
-                title: data[i].menuName,
-                icon: data[i].icon,
-                isHide: data[i].isHide,
-                isKeepAlive: data[i].isKeepAlive,
-                isLink: data[i].isLink,
-                isFull: data[i].isFull,
-                isAffix: data[i].isAffix
-              }
-            };
-            // console.log("component", route.component);
-            if (data[i].menuType == "1") {
-              route.redirect = `${data[i]?.redirect}` || '/home/index';
+      if (data[i] && !router.hasRoute(data[i].path)) {
+        if (data[i].parentId === parentId) {
+          // console.log("component", data[i].component);
+          const componentTemplate = data[i].component;
+          const route: any = {
+            path: `${data[i].path}`,
+            name: `${data[i].name}`,
+            // 这里modules[`/src/views/${componentTemplate}.vue`] 一定要用绝对定位
+            component: data[i]?.component ? modules[`/src/views/${componentTemplate}.vue`] : Layout,
+            meta: {
+              title: data[i].menuName,
+              icon: data[i].icon,
+              isHide: data[i].isHide,
+              isKeepAlive: data[i].isKeepAlive,
+              isLink: data[i].isLink,
+              isFull: data[i].isFull,
+              isAffix: data[i].isAffix
             }
-            // 递归处理子节点
-            const children = generateRoutes(data, data[i].menuId);
-            if (children.length > 0) {
-              route.children = children;
-            }
-    
-            routeList.push(route);
+          };
+          // console.log("component", route.component);
+          if (data[i].menuType == "1") {
+            route.redirect = `${data[i]?.redirect}` || '/home/index';
           }
+          // 递归处理子节点
+          const children = generateRoutes(data, data[i].menuId);
+          if (children.length > 0) {
+            route.children = children;
+          }
+          routeList.push(route);
         }
+      }
     }
     return routeList
 }

@@ -1,47 +1,28 @@
 <template>
-    <el-menu class="el-menu-vertical-demo" 
-    default-active="/"
+    <el-menu class="el-menu-vertical-demo"
+    :default-active="activeMenu"
     :collapse="globalStore.isCollapse"
     :collapse-transition="false"
     :uniqueOpened="true"
     :router="false"
     :class="menuAnimate">
-        <el-menu-item index="/">
-        <el-icon><HomeFilled /></el-icon>
-        <span>首页</span>
-        </el-menu-item>
-        <el-sub-menu index="1">
-        <template #title>
-            <el-icon><Setting /></el-icon>
-            <span>系统管理</span>
-        </template>
-            <el-menu-item index="/system/user">
-            <template #title>
-                <el-icon><User /></el-icon>
-                <span>用户管理</span>
-            </template>
-            </el-menu-item>
-            <el-menu-item index="/system/role">
-            <template #title>
-                <el-icon><Camera /></el-icon>
-                <span>角色管理</span>
-            </template>
-            </el-menu-item>
-            <el-menu-item index="/system/menu">
-            <template #title>
-                <el-icon><Menu /></el-icon>
-                <span>菜单管理</span>
-            </template>
-            </el-menu-item>
-        </el-sub-menu>
+      <MenuList :menuList="menuList" />
     </el-menu>
 </template>
 
 <script lang="ts" setup>
-import {ref} from 'vue'
+import MenuList from './MenuList.vue'
+import {ref, computed} from 'vue'
+import { useRoute } from "vue-router";
 import useGlobalStore from "@/stores/modules/global.ts";
+import useAuthStore from "@/stores/modules/auth.ts";
 
+const route = useRoute()
+const authStore = useAuthStore()
 const globalStore = useGlobalStore()
+
+const menuList = computed(() => authStore.showMenuList);
+const activeMenu = computed(() => (route.meta.activeMenu ? route.meta.activeMenu : route.path) as string);
 
 const menuAnimate = ref('animate__animated animate__fadeInLeft')
 </script>

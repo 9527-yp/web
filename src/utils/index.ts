@@ -13,7 +13,6 @@ export const getAssets = (url: string) => {
  * @returns {Array}
  * */
 export function getShowStaticAndDynamicMenuList(menuList: any) {
-  console.log(menuList,'menuList')
   let newMenuList: any = JSON.parse(JSON.stringify(menuList));
   return newMenuList.filter((item: any) => {
     return item.isHide == "1" || item.meta?.isHide == "1";
