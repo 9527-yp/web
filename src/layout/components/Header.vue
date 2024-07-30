@@ -47,11 +47,13 @@ import { useRoute, useRouter } from "vue-router";
 
 import useGlobalStore from "@/stores/modules/global.ts";
 import useAuthStore from "@/stores/modules/auth.ts";
+import useUserStore from "@/stores/modules/user.ts";
 
 const globalStore = useGlobalStore()
 const route = useRoute()
 const router = useRouter()
 const authStore = useAuthStore()
+const userStore = useUserStore()
 
 // 用户头像
 const avatar = ref(
@@ -74,18 +76,25 @@ const breadcrumbList = computed(() => {
   return breadcrumbData;
 });
 
+// 退出登录
+const handleLayout = () => {
+  window.localStorage.removeItem('token');
+  // 退出登录。必须使用replace把页面缓存刷掉。
+  window.location.replace('/login');
+};
+
 // 面包屑跳转
 const handleBreadcrumb = (item: any, index: number) => {
     if (index !== breadcrumbList.value.length - 1) router.push(item.path);
 }
-// 下拉折叠
+// 下拉折叠（退出登录）
 const handleCommand = (command: string | number) => {
   switch (command) {
     case "koiMine":
     //   router.push("/system/personage");
       break;
     case "logout":
-    //   handleLayout();
+      handleLayout();
       break;
   }
 };
