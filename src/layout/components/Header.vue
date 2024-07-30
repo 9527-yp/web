@@ -7,9 +7,14 @@
                 </el-icon>
                 <div class="header-bread">
                     <el-breadcrumb :separator-icon="ArrowRight">
-                        <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
-                        <el-breadcrumb-item>系统管理</el-breadcrumb-item>
-                        <el-breadcrumb-item>用户管理</el-breadcrumb-item>
+                        <el-breadcrumb-item :to="{ path: '/' }" v-for="(item,index) in breadcrumbList" :key="item.path">
+                            <div class="el-breadcrumb__inner is-link" @click="handleBreadcrumb(item,index)">
+                                <el-icon class="breadcrumb-icon">
+                                    <component :is="item.meta.icon"></component>
+                                </el-icon>
+                                <span class="breadcrumb-title">{{ item.meta.title }}</span>
+                            </div>
+                        </el-breadcrumb-item>
                     </el-breadcrumb>
                 </div>
             </div>
@@ -37,11 +42,16 @@
 
 <script lang="ts" setup>
 import { ArrowRight } from '@element-plus/icons-vue'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
+import { useRoute, useRouter } from "vue-router";
 
 import useGlobalStore from "@/stores/modules/global.ts";
+import useAuthStore from "@/stores/modules/auth.ts";
 
 const globalStore = useGlobalStore()
+const route = useRoute()
+const router = useRouter()
+const authStore = useAuthStore()
 
 // 用户头像
 const avatar = ref(
@@ -52,6 +62,21 @@ const errorAvatar = "https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1
 const changeCollapseIcon = () => {
     // 定义图标切换变量(true-折叠，false-展开)
     globalStore.isCollapse = globalStore.setCollapse(globalStore.isCollapse);
+}
+
+// 面包屑数据
+const breadcrumbList = computed(() => {
+  let breadcrumbData = authStore.getBreadcrumbList[route.matched[route.matched.length - 1].path] ?? [];
+  // 不需要首页面包屑可删除以下判断
+  if (breadcrumbData[0].path !== '/home/index') {
+    breadcrumbData = [{ path: '/home/index', meta: { icon: "HomeFilled", title: "首页" } }, ...breadcrumbData];
+  }
+  return breadcrumbData;
+});
+
+// 面包屑跳转
+const handleBreadcrumb = (item: any, index: number) => {
+    if (index !== breadcrumbList.value.length - 1) router.push(item.path);
 }
 // 下拉折叠
 const handleCommand = (command: string | number) => {
@@ -84,6 +109,8 @@ const handleCommand = (command: string | number) => {
         }
         .header-bread{
             margin-left:20px;
+            display:flex;
+            align-items: center;
         }
     }
     .header-right{
@@ -114,6 +141,47 @@ const handleCommand = (command: string | number) => {
                 line-clamp: 1;
             }
         }
+    }
+}
+.el-breadcrumb {
+    white-space: nowrap;
+    display:flex;
+    align-items: center;
+    .el-breadcrumb__item {
+      position: relative;
+      display:flex;
+      align-items: center;
+      .breadcrumb-title {
+        font-weight: 600;
+      }
+      .item-no-icon {
+        transform: translateY(-3px);
+      }
+      .el-breadcrumb__inner {
+        display: flex;
+        align-items: center;
+        &.is-link {
+          color: var(--el-header-text-color);
+          &:hover {
+            color: #fa7e23;
+          }
+        }
+        .breadcrumb-icon {
+          margin-top: 1px;
+          margin-right: 6px;
+          font-size: 16px;
+        }
+        .breadcrumb-title {
+          margin-top: 2px;
+        }
+      }
+      &:last-child .el-breadcrumb__inner,
+      &:last-child .el-breadcrumb__inner:hover {
+        color: var(--el-header-text-color-regular);
+      }
+      :deep(.el-breadcrumb__separator) {
+        transform: translateY(-1px);
+      }
     }
 }
 </style>

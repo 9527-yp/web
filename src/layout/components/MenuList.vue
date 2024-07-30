@@ -4,14 +4,14 @@
         <!-- 非叶子节点 v-show：true(显示)false(隐藏)，v-if反之。 -->
         <el-sub-menu v-if="item.children?.length" :index="item.path">
             <template #title>
-                <el-icon><component :is="item.icon"></component></el-icon>
+                <el-icon><component :is="item.meta.icon"></component></el-icon>
                 <span>{{ item.meta.title }}</span>
             </template>
             <MenuList :menuList="item.children" />
         </el-sub-menu>
         <!-- 叶子节点[功能节点] -->
-        <el-menu-item v-else :index="item.path">
-            <el-icon><component :is="item.icon"></component></el-icon>
+        <el-menu-item v-else :index="item.path" @click="handMenuRouter(item.path)">
+            <el-icon><component :is="item.meta.icon"></component></el-icon>
             <span>{{ item.meta.title }}</span>
         </el-menu-item>
     </template>
@@ -22,6 +22,15 @@
     defineProps(["menuList"]);
 
     import MenuList from '@/layout/components/MenuList.vue'
+
+    import { useRouter } from 'vue-router'
+
+    const router = useRouter()
+
+    // 菜单点击跳转
+    const handMenuRouter = (value : string) => {
+      router.push(value)
+    }
 </script>
 
 <style lang="less" scoped>
