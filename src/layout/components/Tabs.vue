@@ -1,16 +1,17 @@
 <template>
     <div class="header-tabs">
         <el-tabs
-            v-model="editableTabsValue"
-            type="card"
-            class="demo-tabs"
-            @edit="handleTabsEdit"
+          v-model="activeTab"
+          type="card"
+          class="demo-tabs"
+          @tab-click="clickToggleTab"
+          @tab-remove="removeTab"
         >
             <el-tab-pane
-            v-for="item in editableTabs"
-            :key="item.name"
+            v-for="item in tabList"
+            :key="item.path"
             :label="item.title"
-            :name="item.name"
+            :name="item.path"
             :closable="item.closeIcon"
             >
                 <!-- 加载图标 -->
@@ -30,47 +31,81 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue'
-import type { TabPaneName } from 'element-plus'
+import { ref, computed, watch, onMounted } from 'vue'
+import {useRoute, useRouter } from 'vue-router'
+import type { TabsPaneContext } from 'element-plus'
 
-let tabIndex = 2
-const editableTabsValue = ref('2')
-const editableTabs = ref([
-  {
-    title: 'Tab 1',
-    name: '1',
-    icon:'HomeFilled',
-    content: 'Tab 1 content',
-    closeIcon:true,
-  },
-  {
-    title: 'Tab 2',
-    name: '2',
-    icon:'HomeFilled',
-    content: 'Tab 2 content',
-    closeIcon:true,
-  },
-])
-const handleTabsEdit = (
-  targetName: TabPaneName | undefined,
-  action: 'remove'
-) => {
-  const tabs = editableTabs.value
-  let activeName = editableTabsValue.value
-  if (activeName === targetName) {
-    tabs.forEach((tab, index) => {
-      if (tab.name === targetName) {
-        const nextTab = tabs[index + 1] || tabs[index - 1]
-        if (nextTab) {
-          activeName = nextTab.name
-        }
-      }
-    })
+import useTabsStore from '@/stores/modules/tabs.ts'
+
+// 获取当前路由
+const route = useRoute();
+// 路由跳转
+const router = useRouter();
+
+const tabsStore = useTabsStore()
+
+
+// 页面创建后，立即初始化选项卡 AND 拖拽函数
+onMounted(() => {
+  addTab(); // 添加选项卡[进入根页面，立即添加首页]
+  setActiveTab(); // 设置激活选项卡[进入根页面，立即激活首页]
+})
+
+// 获取选项卡数据
+const tabList = computed(() => {
+  return tabsStore.getTabs
+})
+
+//激活选项卡
+const activeTab = ref(route.fullPath)
+const setActiveTab = () => {
+  activeTab.value = route.fullPath
+}
+
+// 添加选项卡
+const addTab = () => {
+  // 解构路由数据
+  const { meta, fullPath } = route;
+  // 构造选项卡数据
+  const tab = {
+    icon: meta.icon,
+    title: meta.title as string,
+    path: fullPath,
+    name: route.name as string,
+    closeIcon: route.meta.isAffix == "1", // true则显示关闭图标
+    isKeepAlive: route.meta.isKeepAlive
+  };
+  if (fullPath == '/home/index') {
+    // 如果是首页的话，就固定不可关闭。
+    tab.closeIcon = false;
   }
+  // 添加到选项卡仓库里面
+  tabsStore.addTab(tab);
 
-  editableTabsValue.value = activeName
-  editableTabs.value = tabs.filter((tab) => tab.name !== targetName)
-  
+}
+
+// 监听当前路由，路由path发生变化添加选项卡数据
+watch(
+  () => route.fullPath,
+  () => {
+    if (route.meta.isFull == "0") return;
+    // 2、激活选中的选项卡
+    setActiveTab();
+    // 3、添加选项卡
+    addTab();
+  }
+);
+// 点击选项卡
+const clickToggleTab = (tab: TabsPaneContext) => {
+  console.log(tab,'tab')
+  const { props } = tab;
+  // 将切换的选项卡进行添加路由操作
+  router.push({ path: props.name as string });
+}
+
+// 删除选项卡
+const removeTab = (fullPath: any) => {
+  tabsStore.removeTab(fullPath,fullPath == route.fullPath,'null')
 }
 
 </script>
