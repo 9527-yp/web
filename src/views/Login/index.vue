@@ -64,7 +64,10 @@
     import { initDynamicRouter } from "@/router/modules/dynamicRouter.ts";
     import { getAssets } from '@/utils/index.ts'
     import useUserStore from "@/stores/modules/user.ts";
+    import useKeepAliveStore from "@/stores/modules/keepAlive.ts";
+    import useTabsStore from "@/stores/modules/tabs.ts";
     import authLogin from './json/authLogin.json'
+    
     // import { initDynamicRouter } from "@/routers/modules/dynamicRouter.ts";
 
     import { useRouter } from "vue-router";
@@ -75,6 +78,9 @@
     const loading = ref(false);
 
     const router = useRouter()
+
+    const keepAliveStore = useKeepAliveStore();
+    const tabsStore = useTabsStore();
 
     interface loginUser {
         loginName: string;
@@ -134,8 +140,8 @@
             await initDynamicRouter();
 
             // 3、清空 tabs数据、keepAlive缓存数据
-            // tabsStore.setTab([]);
-            // keepAliveStore.setKeepAliveName([]);
+            tabsStore.setTab([]);
+            keepAliveStore.setKeepAliveName([]);
 
             // 4、跳转到首页
             loading.value = false;

@@ -11,7 +11,11 @@
       </el-header>
       <Tabs />
       <el-main class="layout-main">
-        <router-view></router-view>
+        <router-view v-slot="{ Component, route}">
+          <keep-alive :max="16" :include="['menuPage']">
+            <component :is="Component" :key="route.fullPath" v-if="isRouterShow" />
+          </keep-alive>
+        </router-view>
       </el-main>
     </el-container>
   </el-container>
@@ -25,9 +29,17 @@ import Tabs from './components/Tabs.vue'
 
 import useGlobalStore from "@/stores/modules/global.ts";
 import useAuthStore from "@/stores/modules/auth.ts";
+import useKeepAliveStore from "@/stores/modules/keepAlive.ts";
+import { storeToRefs } from "pinia";
+import { ref } from "vue";
 
 const globalStore = useGlobalStore()
 const authStore = useAuthStore()
+
+const keepAliveStore = useKeepAliveStore();
+const { keepAliveName } = storeToRefs(keepAliveStore);
+console.log(keepAliveName,'keepAliveName')
+const isRouterShow = ref(true);
 
 console.log("纵向布局左侧动态路由", authStore.showMenuList);
 </script>
