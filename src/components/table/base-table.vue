@@ -38,7 +38,7 @@
                     <template #default="scope">
                         <div class="flex justify-center">
                         <el-image
-                            class="rounded-full w-36px h-36px"
+                            class="rounded-full"
                             :preview-teleported="true"
                             :preview-src-list="[scope.row.avatar]"
                             :src="
@@ -224,3 +224,11 @@ const handleSwitch = (row: any) => {
 
 
 </script>
+
+<style lang="less" scoped>
+.rounded-full{
+    width:36px;
+    height:36px;
+    border-radius:999px;
+}
+</style>
