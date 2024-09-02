@@ -6,110 +6,87 @@
                 <TableOperate v-model:showSearch="showSearch" :busKey="busKey" />
             </el-row>
         </div>
-        <el-table
-            v-loading="loading"
-            border
-            :data="tableList"
-            empty-text="暂时没有数据哟🌻"
-        >
+        <el-table v-loading="loading" border :data="tableList" empty-text="暂时没有数据哟🌻">
             <el-table-column type="selection" width="55" align="center" />
             <el-table-column label="序号" prop="userId" width="80px" align="center" type="index"></el-table-column>
-            <el-table-column
-            label="登录账号"
-            prop="loginName"
-            width="120px"
-            align="center"
-            :show-overflow-tooltip="true"
-            ></el-table-column>
-            <el-table-column label="头像" prop="avatar" width="80px" align="center">
-            <template #default="scope">
-                <div class="flex justify-center">
-                <el-image
-                    class="rounded-full w-36px h-36px"
-                    :preview-teleported="true"
-                    :preview-src-list="[scope.row.avatar]"
-                    :src="
-                    scope.row.avatar != null && scope.row.avatar != ''
-                        ? scope.row.avatar
-                        : 'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png'
-                    "
+            <template v-for="item in tableColumns" :key="item.dataIndex">
+                <el-table-column
+                    v-if="item.columnType == 'text'"
+                    :label="item.title"
+                    :prop="item.dataIndex"
+                    :width="item.width || '120px'" 
+                    align="center" 
+                    :show-overflow-tooltip="true" 
+                ></el-table-column>
+                <el-table-column
+                    v-if="item.columnType == 'tag'"
+                    :label="item.title"
+                    :prop="item.dataIndex"
+                    :width="item.width || '120px'" 
+                    align="center" 
                 >
-                    <template #error>
-                    <el-icon class="c-[--el-color-primary]" :size="36">
-                        <CircleCloseFilled />
-                    </el-icon>
+                    <template #default="scope">
+                        <BaseTag :tagOptions="item.options" :value="scope.row[item.dataIndex]"></BaseTag>
                     </template>
-                </el-image>
-                </div>
+                </el-table-column>
+                <el-table-column 
+                  v-if="item.columnType == 'image'"
+                  :label="item.title"
+                  :prop="item.dataIndex"
+                  :width="item.width || '120px'" 
+                  align="center" >
+                    <template #default="scope">
+                        <div class="flex justify-center">
+                        <el-image
+                            class="rounded-full w-36px h-36px"
+                            :preview-teleported="true"
+                            :preview-src-list="[scope.row.avatar]"
+                            :src="
+                            scope.row.avatar != null && scope.row.avatar != ''
+                                ? scope.row.avatar
+                                : 'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png'
+                            "
+                        >
+                            <template #error>
+                            <el-icon class="c-[--el-color-primary]" :size="36">
+                                <CircleCloseFilled />
+                            </el-icon>
+                            </template>
+                        </el-image>
+                        </div>
+                    </template>
+                </el-table-column>
+                <!-- 注意：如果后端数据返回的是字符串"0" OR "1"，这里的active-value AND inactive-value不需要加冒号，会认为是字符串，否则：后端返回是0 AND 1数字，则需要添加冒号 -->
+                <el-table-column 
+                  v-if="item.columnType == 'switch'"
+                  :label="item.title"
+                  :prop="item.dataIndex"
+                  :width="item.width || '120px'" 
+                  align="center" >
+                    <template #default="scope">
+                        <el-switch
+                        v-model="scope.row[item.dataIndex]"
+                        active-text="启用"
+                        inactive-text="停用"
+                        active-value="0"
+                        inactive-value="1"
+                        :inline-prompt="true"
+                        >
+                        </el-switch>
+                    </template>
+                </el-table-column>
+                <el-table-column
+                  v-if="item.columnType == 'operation'"
+                  :label="item.title"
+                  :prop="item.dataIndex"
+                  :width="item.width || '120px'" 
+                  align="center"
+                  fixed="right">
+                <template #default="{ row }">
+                    <slot name="rowOperation" :record="row"></slot>
+                </template>
+                </el-table-column>
             </template>
-            </el-table-column>
-            <el-table-column
-            label="用户名称"
-            prop="userName"
-            width="120px"
-            align="center"
-            :show-overflow-tooltip="true"
-            ></el-table-column>
-            <el-table-column label="邮箱" prop="email" width="220px" align="center" :show-overflow-tooltip="true"></el-table-column>
-            <el-table-column label="手机号" prop="phone" width="150px" align="center" :show-overflow-tooltip="true"></el-table-column>
-            <el-table-column label="用户类型" prop="userType" width="100px" align="center">
-            <template #default="scope">
-                <BaseTag :tagOptions="userTypeOptions" :value="scope.row.userType"></BaseTag>
-            </template>
-            </el-table-column>
-            <el-table-column label="用户性别" prop="sex" width="100px" align="center">
-            <template #default="scope">
-                <BaseTag :tagOptions="userSexOptions" :value="scope.row.sex"></BaseTag>
-            </template>
-            </el-table-column>
-            <!-- 注意：如果后端数据返回的是字符串"0" OR "1"，这里的active-value AND inactive-value不需要加冒号，会认为是字符串，否则：后端返回是0 AND 1数字，则需要添加冒号 -->
-            <el-table-column label="用户状态" prop="userStatus" width="100px" align="center">
-            <template #default="scope">
-                <!-- {{ scope.row.userStatus }} -->
-                <el-switch
-                v-model="scope.row.userStatus"
-                active-text="启用"
-                inactive-text="停用"
-                active-value="0"
-                inactive-value="1"
-                :inline-prompt="true"
-                @change="handleSwitch(scope.row)"
-                >
-                </el-switch>
-            </template>
-            </el-table-column>
-            <el-table-column label="创建时间" prop="createTime" width="180px" align="center"></el-table-column>
-            <el-table-column label="备注" prop="remark" width="200px" align="center" :show-overflow-tooltip="true"></el-table-column>
-            <el-table-column
-            label="操作"
-            align="center"
-            width="150"
-            fixed="right"
-            v-auth="['system:role:update', 'system:role:delete']"
-            >
-            <template #default="{ row }">
-                <el-tooltip content="修改🌻" placement="top">
-                <el-button
-                    type="primary"
-                    icon="Edit"
-                    circle
-                    plain
-                    @click="handleUpdate(row)"
-                    v-auth="['system:role:update']"
-                ></el-button>
-                </el-tooltip>
-                <el-tooltip content="删除🌻" placement="top">
-                <el-button
-                    type="danger"
-                    icon="Delete"
-                    circle
-                    plain
-                    @click="handleDelete(row)"
-                    v-auth="['system:role:delete']"
-                ></el-button>
-                </el-tooltip>
-            </template>
-            </el-table-column>
         </el-table>
     </div>
 </template>
@@ -118,12 +95,16 @@
 import TableOperate from '@/components/table/table-operate.vue'
 import BaseTag from '@/components//tag/base-tag.vue'
 
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 
 defineProps({
     busKey: {
         type: String,
         default: ''
+    },
+    tableColumns: {
+        type: Array,
+        default: []
     }
 })
 
@@ -131,6 +112,7 @@ const showSearch = defineModel('showSearch', {
     type: Boolean,
     default: true
 })
+
 // 数据表格加载页面动画
 const loading = ref(false);
 
@@ -216,44 +198,6 @@ const tableList = ref<any>([
   },
 ]);
 
-// 翻译数据[用户类型]
-const userTypeOptions = ref();
-/** 字典翻译tag */
-const handleDict1 = async () => {
-  try {
-    userTypeOptions.value = [
-      {
-        dictLabel: "系统用户",
-        dictValue: "1",
-        dictTag: "primary",
-        dictColor: ""
-      },
-      {
-        dictLabel: "注册用户",
-        dictValue: "2",
-        dictTag: "warning",
-        dictColor: ""
-      }
-    ];
-  } catch (error) {
-    console.log(error);
-  }
-};
-
-// 翻译数据[用户性别]
-const userSexOptions = ref();
-/** 字典翻译tag */
-const handleDict2 = async () => {
-  try {
-    userSexOptions.value = [
-      { dictLabel: "男", dictValue: "1", dictTag: "primary", dictColor: "" },
-      { dictLabel: "女", dictValue: "2", dictTag: "danger", dictColor: "" },
-      { dictLabel: "未知", dictValue: "3", dictTag: "info", dictColor: "" }
-    ];
-  } catch (error) {
-    console.log(error);
-  }
-};
 /** 状态switch */
 const handleSwitch = (row: any) => {
   let text = row.userStatus === "0" ? "启用" : "停用";
@@ -277,16 +221,6 @@ const handleSwitch = (row: any) => {
 //       koiMsgError("已取消🌻");
 //     });
 };
-
-/** 编辑 */
-const handleUpdate = () => {
-
-}
-
-/** 删除 */
-const handleDelete = () => {
-
-}
 
 
 </script>

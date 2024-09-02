@@ -9,6 +9,11 @@
                 <template #tableOperation>
                     <slot name="tableOperation"></slot>
                 </template>
+
+                <!-- table操作 -->
+                <template #rowOperation="{record}">
+                    <slot name="rowOperation" :record="record"></slot>
+                </template>
             </BaseTable>
         </div>
     </div>
