@@ -1,6 +1,6 @@
 <template>
     <div class="custom-table">
-        <div class="">
+        <div class="table-page-top">
             <el-row :gutter="10">
                 <slot name="tableOperation"></slot>
                 <TableOperate v-model:showSearch="showSearch" :busKey="busKey" />
@@ -230,5 +230,8 @@ const handleSwitch = (row: any) => {
     width:36px;
     height:36px;
     border-radius:999px;
+}
+.table-page-top{
+    margin-bottom:20px;
 }
 </style>

@@ -194,7 +194,7 @@ const tableColumns = ref([
 /** 是否显示搜索表单 */
 const showSearch = ref<boolean>(true); // 默认显示搜索条件
 
-// 刷新表格数据
+// 搜索表单显示隐藏
 formBus.on((event) => {
   switch (event) {
     case 'onShowform':
