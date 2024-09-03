@@ -6,8 +6,14 @@
                 <TableOperate v-model:showSearch="showSearch" :busKey="busKey" />
             </el-row>
         </div>
-        <el-table v-loading="loading" border :data="tableList" empty-text="暂时没有数据哟🌻">
-            <el-table-column type="selection" width="55" align="center" />
+        <el-table v-loading="loading"
+          border
+          ref="tableRef"
+          row-key="userId"
+          :data="tableList"
+          @selection-change="handleSelectionChange"
+          empty-text="暂时没有数据哟🌻">
+            <el-table-column :reserve-selection="true" type="selection" width="55" align="center" />
             <el-table-column label="序号" prop="userId" width="80px" align="center" type="index"></el-table-column>
             <template v-for="item in tableColumns" :key="item.dataIndex">
                 <el-table-column
@@ -66,11 +72,13 @@
                     <template #default="scope">
                         <el-switch
                         v-model="scope.row[item.dataIndex]"
-                        active-text="启用"
-                        inactive-text="停用"
-                        active-value="0"
-                        inactive-value="1"
+                        :active-text="item.options[0].label"
+                        :inactive-text="item.options[1].label"
+                        :active-value="item.options[0].value"
+                        :inactive-value="item.options[1].value"
                         :inline-prompt="true"
+                        :loading='scope.switchLoading'
+                        @change="switchChange(item, scope, scope.row[item.dataIndex])"
                         >
                         </el-switch>
                     </template>
@@ -95,132 +103,129 @@
 import TableOperate from '@/components/table/table-operate.vue'
 import BaseTag from '@/components//tag/base-tag.vue'
 
-import { ref, onMounted } from 'vue';
+import { ref, computed, onMounted, toRef, toRefs, watch } from 'vue';
+import {useEventBus} from '@vueuse/core';
+import { ElTable } from 'element-plus'
 
-defineProps({
+const props = defineProps({
+    // bus key
     busKey: {
         type: String,
         default: ''
     },
+    // 表头数据
     tableColumns: {
         type: Array,
         default: []
-    }
+    },
+    // 数据方法
+    loadTableDataApiFunc: {
+        type: Function,
+    },
+    // 表格数据
+    tableDataSource: {
+        type: Array,
+        default: () => []
+    },
 })
 
+const tableRef = ref<InstanceType<typeof ElTable>>()
 const showSearch = defineModel('showSearch', {
     type: Boolean,
     default: true
 })
 
+// 表格选中的行键值
+const tableSelectedRowKeys = defineModel('tableSelectedRowKeys', {
+  type: Array,
+  default: () => []
+})
+// 表格选中的行
+const tableSelectedRows = defineModel('tableSelectedRows', {
+  type: Array,
+  default: () => []
+})
+
+watch(() =>tableSelectedRows.value, (newItems, oldItems) => {
+    if(oldItems === undefined){
+        setTimeout(() => {
+            if (newItems) {
+                newItems.forEach((row) => {
+                    console.log(row, 'row')
+                tableRef.value?.toggleRowSelection(row, undefined)
+                })
+            } else {
+                tableRef.value?.clearSelection()
+            }
+        },300)
+    }
+},{immediate:true,deep:true});
+// table 表格选中
+const handleSelectionChange = (val: any) => {
+    tableSelectedRowKeys.value = val.map(item => item.userId); 
+    tableSelectedRows.value = val
+}
+
 // 数据表格加载页面动画
 const loading = ref(false);
 
 // 数据表格数据
-const tableList = ref<any>([
-  {
-    userId: 1,
-    loginName: "YU-ADMIN",
-    userName: "超级管理员",
-    userType: "1",
-    email: "YU-ADMIN666@163.com",
-    phone: "18888888888",
-    sex: "1",
-    avatar: "https://pic4.zhimg.com/v2-702a23ebb518199355099df77a3cfe07_b.webp",
-    userStatus: "0",
-    remark: "管理员",
-    createTime: "2023-08-06 04:00:00"
-  },
-  {
-    userId: 2,
-    loginName: "KOI",
-    userName: "小锦鲤",
-    userType: "1",
-    email: "koi@qq.com",
-    phone: "18666666666",
-    sex: "1",
-    avatar: "https://pic2.zhimg.com/v2-44ce1b82f7e68de4078bf513221619e1_b.webp",
-    userStatus: "0",
-    remark: "管理员",
-    createTime: "2023-08-07 04:00:00"
-  },
-  {
-    userId: 3,
-    loginName: "YXT",
-    userName: "于金金",
-    userType: "2",
-    email: "koi@qq.com",
-    phone: "18666666666",
-    sex: "2",
-    avatar: "https://pic1.zhimg.com/v2-3cbc889feac057cc7fb85a40c82598dc_b.webp",
-    userStatus: "0",
-    remark: "管理员",
-    createTime: "2023-08-08 04:00:00"
-  },
-  {
-    userId: 4,
-    loginName: "orange",
-    userName: "迪迦",
-    userType: "1",
-    email: "YU-ADMIN666@163.com",
-    phone: "18888888888",
-    sex: "1",
-    avatar: "https://pic3.zhimg.com/v2-b6c350529f3c06c8a90d886c311f3866_b.webp",
-    userStatus: "0",
-    remark: "远古时代战士",
-    createTime: "2023-08-06 04:00:00"
-  },
-  {
-    userId: 5,
-    loginName: "apple",
-    userName: "盖亚",
-    userType: "1",
-    email: "koi@qq.com",
-    phone: "18666666666",
-    sex: "1",
-    avatar: "https://pic2.zhimg.com/v2-430e1a7dd0508a0b4b01dca9b94b22f5_b.webp",
-    userStatus: "0",
-    remark: "远古时代战士",
-    createTime: "2023-08-07 04:00:00"
-  },
-  {
-    userId: 6,
-    loginName: "banana",
-    userName: "阿古茹",
-    userType: "2",
-    email: "koi@qq.com",
-    phone: "18666666666",
-    sex: "2",
-    avatar: "https://pic3.zhimg.com/v2-6e8ff25c222b6302cb836c9f6b013e7e_b.webp",
-    userStatus: "0",
-    remark: "远古时代战士",
-    createTime: "2023-08-08 04:00:00"
-  },
-]);
+const loadDataSource = ref([])
+const tableList = computed(() => {
+  return props.tableDataSource.length > 0 ? props.tableDataSource : loadDataSource.value
+})
+
+const params = ref({
+
+})
+// 加载表格数据
+const loadTableData = async () => {
+  // 如果没有数据加载函数
+  if (!props.loadTableDataApiFunc) return
+  loading.value = true
+  // 加载数据
+  props.loadTableDataApiFunc(params.value).then(res => {
+    loadDataSource.value = res?.data || []
+  }).finally(() => {
+    loading.value = false
+  })
+}
 
 /** 状态switch */
-const handleSwitch = (row: any) => {
-  let text = row.userStatus === "0" ? "启用" : "停用";
-//   koiMsgBox("确认要[" + text + "]-[" + row.userName + "]吗？")
-//     .then(async () => {
-//       resetForm();
-//       if (!row.userId || !row.userStatus) {
-//         koiMsgWarning("请选择需要修改的数据🌻");
-//         return;
-//       }
-//       try {
-//         await updateStatus(row.userId, row.userStatus);
-//         koiNoticeSuccess("修改成功🌻");
-//       } catch (error) {
-//         console.log(error);
-//         koiNoticeError("修改失败，请刷新重试🌻");
-//         handleTableData();
-//       }
-//     })
-//     .catch(() => {
-//       koiMsgError("已取消🌻");
-//     });
+const switchChange = (item:any, scope, value) => {
+    console.log(item, scope.row, value)
+    scope.switchLoading = true
+    // 调用接口方法
+    item?.switchFunc(scope.row.userId, value).catch(() => {
+        const options = item?.options || []
+        const find = options.find(item => item.value !== value)
+        if (find) {
+        scope.row[item.dataIndex] = find.value
+        }
+    }).finally(() => {
+        scope.switchLoading = false
+    })
 };
+// 搜索事件总线
+const searchBus = useEventBus(`${props.busKey}_search}`);
+// 搜索事件总线
+searchBus.on(async (event, data) => {
+  switch (event) {
+    case 'onSearch':
+      console.log('表格搜索：', data)
+      loading.value = true
+      params.value = data
+      await loadTableData()
+      break
+    default:
+      break
+  }
+})
+
+onMounted(() => {
+  console.log('开始加载表格数据')
+  loadTableData()
+})
 
 
 </script>

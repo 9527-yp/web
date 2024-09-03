@@ -40,6 +40,7 @@
 
 <script setup lang="ts">
 import { ref, reactive } from 'vue'
+import { useEventBus } from '@vueuse/core'
 
 interface SearchField {
   fieId: string;
@@ -53,7 +54,11 @@ interface SearchForm {
 }  
 
 const props = defineProps({
-    searchParams: Array as () => SearchField[]
+    searchParams: Array as () => SearchField[],
+    busKey: {
+        type: String,
+        default: ''
+    }
 })
 
 
@@ -75,10 +80,12 @@ const resetForm = () => {
         form[key] = ''
     }
 };
-
+// 搜索事件总线
+const searchBus = useEventBus(`${props.busKey}_search}`);
 /** 搜索 */
 const handleSearch = () => {
   console.log("搜索", form);
+   searchBus.emit('onSearch', form);
 };
 
 /** 重置 */
