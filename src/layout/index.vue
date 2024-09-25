@@ -12,7 +12,7 @@
       <Tabs />
       <el-main class="layout-main">
         <router-view v-slot="{ Component, route}">
-          <keep-alive :max="16" :include="['menuPage']">
+          <keep-alive :max="16" :include="keepAliveName">
             <component :is="Component" :key="route.fullPath" v-if="isRouterShow" />
           </keep-alive>
         </router-view>

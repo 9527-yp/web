@@ -23,7 +23,8 @@
                     :width="item.width || '120px'" 
                     align="center" 
                     :show-overflow-tooltip="true" 
-                ></el-table-column>
+                >
+                </el-table-column>
                 <el-table-column
                     v-if="item.columnType == 'tag'"
                     :label="item.title"
@@ -96,6 +97,18 @@
                 </el-table-column>
             </template>
         </el-table>
+        <div class="page-pagination">
+            <el-pagination
+                v-model:current-page="params.pageNumber"
+                v-model:page-size="params.pageSize"
+                :page-sizes="[10, 20, 30, 50]"
+                :background="true"
+                layout="total, sizes, prev, pager, next, jumper"
+                :total="total"
+                @size-change="handleSizeChange"
+                @current-change="handleCurrentChange"
+                />
+        </div>
     </div>
 </template>
 
@@ -106,6 +119,7 @@ import BaseTag from '@/components//tag/base-tag.vue'
 import { ref, computed, onMounted, toRef, toRefs, watch } from 'vue';
 import {useEventBus} from '@vueuse/core';
 import { ElTable } from 'element-plus'
+import type { ComponentSize } from 'element-plus'
 
 const props = defineProps({
     // bus key
@@ -165,6 +179,25 @@ const handleSelectionChange = (val: any) => {
     tableSelectedRowKeys.value = val.map(item => item.userId); 
     tableSelectedRows.value = val
 }
+const total = ref(0)
+/**  分页操作 */
+const params = ref({
+    pageSize: 10,
+    pageNumber: 1
+})
+
+const handleSizeChange = (val: number) => {
+    console.log(`${val} items per page`,params.value)
+    // 分页pageSize切换
+    loading.value = true
+    loadTableData()
+}
+const handleCurrentChange = (val: number) => {
+    console.log(`current page: ${val}`,params.value)
+    // 分页pageNumber切换
+    loading.value = true
+    loadTableData()
+}
 
 // 数据表格加载页面动画
 const loading = ref(false);
@@ -175,9 +208,7 @@ const tableList = computed(() => {
   return props.tableDataSource.length > 0 ? props.tableDataSource : loadDataSource.value
 })
 
-const params = ref({
 
-})
 // 加载表格数据
 const loadTableData = async () => {
   // 如果没有数据加载函数
@@ -186,6 +217,7 @@ const loadTableData = async () => {
   // 加载数据
   props.loadTableDataApiFunc(params.value).then(res => {
     loadDataSource.value = res?.data || []
+    total.value = res.total;
   }).finally(() => {
     loading.value = false
   })
@@ -214,7 +246,10 @@ searchBus.on(async (event, data) => {
     case 'onSearch':
       console.log('表格搜索：', data)
       loading.value = true
-      params.value = data
+      params.value = {
+        ...params.value,
+        ...data
+      }
       await loadTableData()
       break
     default:
@@ -238,5 +273,12 @@ onMounted(() => {
 }
 .table-page-top{
     margin-bottom:20px;
+}
+.page-pagination{
+    width:100%;
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end
 }
 </style>

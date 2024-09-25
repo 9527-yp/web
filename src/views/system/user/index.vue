@@ -56,6 +56,10 @@ import { ref } from 'vue';
 import {useEventBus} from '@vueuse/core';
 import { ElMessage } from 'element-plus'
 
+defineOptions({
+    name: 'userPage'
+})
+
 interface Option {  
     value: string;  
     label: string;  
