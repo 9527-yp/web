@@ -65,6 +65,22 @@
       "isFull": "1",
       "isAffix": "1",
       "redirect": ""
+    },
+    {
+      "menuId": 13,
+      "menuName": "视频组件",
+      "parentId": 1,
+      "menuType": "2",
+      "path": "/system/my-video",
+      "name": "myVideo",
+      "component": "system/my-video/index",
+      "icon": "Menu",
+      "isHide": "1",
+      "isLink": "",
+      "isKeepAlive": "0",
+      "isFull": "1",
+      "isAffix": "1",
+      "redirect": ""
     }
   ]
 }
