@@ -14,6 +14,6 @@ export default defineConfig({
     }
   },
   server: {
-    port: 8080, // 端口号
+    port: 8080, // 端口号1
   },
 })
