@@ -7,7 +7,16 @@
             <CarbonEmission />
         </div>
         <div class="echart-box">
-            <carbonForecast />
+            <CarbonForecast />
+        </div>
+        <div class="echart-box">
+            <Atlas />
+        </div>
+        <div class="echart-box">
+            <BrokenLine />
+        </div>
+        <div class="echart-box">
+            <City />
         </div>
     </div>
 </template>
@@ -15,7 +24,10 @@
 <script setup>
 import AnalyseBar from './components/AnalyseBar.vue';
 import CarbonEmission from './components/carbonEmission.vue';
-import carbonForecast from './components/carbonForecast.vue';
+import CarbonForecast from './components/carbonForecast.vue';
+import Atlas from './components/Atlas.vue';
+import BrokenLine from './components/BrokenLine.vue';
+import City from './components/City.vue';
 </script>
 
 <style lang="less" scoped>
@@ -28,6 +40,7 @@ import carbonForecast from './components/carbonForecast.vue';
     width: 500px;
     height: 300px;
     margin-right: 20px;
+    margin-bottom: 20px;
     .echart{
         width: 100%;
         height: 100%;
