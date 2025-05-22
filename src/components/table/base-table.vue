@@ -20,7 +20,7 @@
                     v-if="item.columnType == 'text'"
                     :label="item.title"
                     :prop="item.dataIndex"
-                    :width="item.width || '120px'" 
+                    :width="item.width || ''" 
                     align="center" 
                     :show-overflow-tooltip="true" 
                 >
@@ -29,7 +29,7 @@
                     v-if="item.columnType == 'tag'"
                     :label="item.title"
                     :prop="item.dataIndex"
-                    :width="item.width || '120px'" 
+                    :width="item.width || ''" 
                     align="center" 
                 >
                     <template #default="scope">
@@ -88,7 +88,7 @@
                   v-if="item.columnType == 'operation'"
                   :label="item.title"
                   :prop="item.dataIndex"
-                  :width="item.width || '120px'" 
+                  :width="item.width || ''" 
                   align="center"
                   fixed="right">
                 <template #default="{ row }">
