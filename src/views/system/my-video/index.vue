@@ -11,6 +11,7 @@
                 
             />
         </div>
+        <div>接收自菜单组件发送的消息：{{ msg }}</div>
     </div>
 </template>
 
@@ -76,6 +77,31 @@ onMounted(() => {
     // console.log(playVideo.value.currentTime(10) ,'playVideo.value ')
     
 })
+
+
+const msg = ref('');
+// 1. 创建 Broadcast Channel（通道名称需一致）
+const channel = new BroadcastChannel('my_channel');
+
+// 2. 接收消息的监听器
+channel.onmessage = (event) => {
+    console.log(event, 'event')
+    // msg.value = event.data; // 传递的基本类型接收方法
+
+
+    // 传递引用类型接收方法
+    const { type, payload } = event.data;
+    switch (type) {
+        case 'SYNC_DATA':
+            console.log('同步数据:', payload);
+            msg.value = payload.msg;
+            break;
+        case 'NOTIFICATION':
+            alert(payload.msg);
+            break;
+    }
+};
+
 
 </script>
 
